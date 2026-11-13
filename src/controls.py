@@ -1,0 +1,4 @@
+LEFT = 0
+RIGHT = 1
+DOWN = 2
+ROTATE = 3

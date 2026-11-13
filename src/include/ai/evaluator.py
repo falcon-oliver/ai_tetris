@@ -1,51 +1,79 @@
-from collections import deque
-from copy import deepcopy
-from constants import DOWN, LEFT, RIGHT, ROTATE
-from include.ai.node import Node
-from include.game.board import Board
-from include.game.piece import Piece
+import numpy as np
 
+from include.ai.features import Features
+from functools import cache
 
-MOVES = [DOWN, LEFT, RIGHT]
-class Evaluator:
-    def __init__(self):
-        pass
+MAX_LINES_CLEARED = 4
 
-    def _visited(self, piece, visited):
-        return piece.state in visited
+@cache
+def get_max_wells(board):
+    max_wells = (board.width * board.height) / 2
+    return max_wells
 
-    def get_all_moves(self, piece:Piece, board:Board):
-        parent_node = Node(piece=piece, parent_node=None, move=-1, rotations=0)
-        queue = deque([parent_node])
-        visited = set()
-        candidate_moves = []
-        while queue:
-            node = queue.popleft()
-            visited.add(node.piece.state)
-            for current_move in MOVES:
-                temp_piece = deepcopy(node.piece)
-                temp_piece.move(current_move)
-                for index in range(len(temp_piece.rotations)):
-                    temp_piece.move(ROTATE)
-                    if not self._visited(temp_piece, visited):
-                        if board.is_valid(temp_piece):
-                            copied_temp = deepcopy(temp_piece)
-                            queue.append(Node(piece=copied_temp, parent_node=node, move=current_move, rotations=index))
-                            visited.add(temp_piece.state)
-                            if board.is_placable(temp_piece):
-                                candidate_moves.append(Node(piece=copied_temp, parent_node=node, move=current_move, rotations=index))
-        return candidate_moves
+@cache
+def get_max_bumpiness(board):
+    max_bumpiness = board.height * (board.width -1)
+    return max_bumpiness
 
+@cache
+def get_max_holes(board):
+    max_holes = board.width * (board.height -1)
+    return max_holes
 
-    def wells(self):
-        pass
+@cache
+def get_max_aggregate_height(board):
+    max_aggregate_height = (board.width * board.height) - 1
+    return max_aggregate_height
 
-    def bumpiness(self):
-        pass
+@cache
+def get_max_lines_cleared(board):
+    return MAX_LINES_CLEARED
 
-    def holes(self):
-        pass
+NORMALISATION_MAP = {
+    Features.WELLS: get_max_wells,
+    Features.BUMPINESS: get_max_bumpiness,
+    Features.HOLES: get_max_holes,
+    Features.AGGREGATE_HEIGHT: get_max_aggregate_height,
+    Features.LINES_CLEARED: get_max_lines_cleared
+}
 
-    def aggregate_height(self):
-        pass
+def get_column_heights(board):
+    max_height = board.height
+    board_arr = board.board
+    filled_squares = np.not_equal(board_arr, 0)
+    column_heights = filled_squares.argmax(axis=0)
+    return np.where(filled_squares.any(axis=0), max_height - column_heights, 0)
 
+def get_wells(board):
+    column_heights = get_column_heights(board)
+    well_count = 0
+    return well_count
+
+def get_bumpiness(board):
+    column_heights = get_column_heights(board)
+    diffs = np.abs(np.diff(column_heights))
+    bumpiness = sum(diffs)
+    return bumpiness
+
+def get_holes(board):
+    holes = 0
+    return holes
+
+def get_aggregate_height(board):
+    column_heights = get_column_heights(board)
+    aggregate_height = sum(column_heights)
+    return aggregate_height
+
+def get_lines_cleared(board):
+    return board.lines_cleared
+
+FEATURES_MAP = {
+    Features.WELLS: get_wells,
+    Features.BUMPINESS: get_bumpiness,
+    Features.HOLES: get_holes,
+    Features.AGGREGATE_HEIGHT: get_aggregate_height,
+    Features.LINES_CLEARED: get_lines_cleared
+}
+
+def get_features(params, board):
+    return [(FEATURES_MAP[param](board) / NORMALISATION_MAP[param](board)) for param in params]

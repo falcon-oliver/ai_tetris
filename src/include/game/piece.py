@@ -1,5 +1,5 @@
 import numpy as np
-from constants import LEFT, RIGHT, DOWN, ROTATE
+from controls import LEFT, RIGHT, DOWN, ROTATE
 
 PIECE_SHAPES = [
     np.ones((4, 1), dtype=bool),

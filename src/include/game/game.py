@@ -1,7 +1,6 @@
 from .piece import Piece
 from .board import Board
 from random import shuffle
-from torch import tensor, float32
 
 START_X = 4
 START_Y = 0
@@ -13,10 +12,10 @@ class Game:
         self.game_over = False
         self.pieces = [Piece(START_X, START_Y, i) for i in range (7)]
         self.bag = self._generate_bag()
-        self.current_piece = self.pieces[self.bag.pop()]
+        self.next_piece = self.pieces[self.bag.pop()]
 
     def _get_next_piece(self):
-        self.current_piece.reset()
+        self.next_piece.reset()
         if len(self.bag) == 0:
             self.bag = self._generate_bag()
         return self.pieces[self.bag.pop()]
@@ -26,10 +25,9 @@ class Game:
         shuffle(bag)
         return bag
 
-    def drop_piece(self):
-        print(self.current_piece.state)
-        self.board.place_piece(self.current_piece)
-        self.current_piece = self._get_next_piece()
+    def drop_piece(self, piece):
+        self.board.place_piece(piece)
+        self.next_piece = self._get_next_piece()
     
     def gameOver(self):
         return self.game_over

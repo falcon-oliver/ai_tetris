@@ -6,12 +6,18 @@ class Board:
         self.width = width
         self.height = height
         self.board = np.zeros((height, width), dtype=bool)
+        self.previous_board = self.board
+        self.lines_cleared = 0
 
     def place_piece(self, piece):
         piece_matrix = piece.matrix
         rows, cols = piece_matrix.shape
+        self.previous_board = self.board.copy()
         self.board[piece.y:piece.y+rows, piece.x:piece.x+cols] |= piece_matrix
-        self.clear_lines()
+        self.lines_cleared = self.clear_lines()
+
+    def go_back(self):
+        self.board = self.previous_board
 
     def is_placable(self, piece):
         piece_matrix = piece.matrix
