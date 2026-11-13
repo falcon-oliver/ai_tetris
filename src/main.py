@@ -2,6 +2,7 @@ from random import random
 from include.ai.heuristic_ai import HeuristicAi
 from include.game.game import Game
 from include.gui.gui import Gui
+
 FPS = 60
 def play_game():
     game = Game(20, 20)

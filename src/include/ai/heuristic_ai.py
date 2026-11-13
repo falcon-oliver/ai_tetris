@@ -37,7 +37,6 @@ class HeuristicAi():
                 optimal_piece = piece.piece
                 optimal = score
                 optimal_features = features
-            # print(f'score: {score}')
             self.board.go_back()
         self.board.go_back()
         print(f'optimal features {optimal_features}')

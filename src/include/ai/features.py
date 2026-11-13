@@ -1,5 +1,4 @@
 from enum import Enum
-
 class Features(Enum):
     HOLES = 1
     AGGREGATE_HEIGHT = 2

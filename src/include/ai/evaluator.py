@@ -1,5 +1,4 @@
 import numpy as np
-
 from include.ai.features import Features
 from functools import cache
 
@@ -39,15 +38,20 @@ NORMALISATION_MAP = {
 
 def get_column_heights(board):
     max_height = board.height
-    board_arr = board.board
-    filled_squares = np.not_equal(board_arr, 0)
+    board_matrix = board.board
+    filled_squares = np.equal(board_matrix, 1)
     column_heights = filled_squares.argmax(axis=0)
     return np.where(filled_squares.any(axis=0), max_height - column_heights, 0)
 
 def get_wells(board):
     column_heights = get_column_heights(board)
-    well_count = 0
-    return well_count
+    r_column_height = np.roll(column_heights, 1)
+    l_column_heights = np.roll(column_heights, -1)
+    l_column_heights[0] = board.height
+    r_column_height[-1] = board.height
+    wells = np.minimum(np.maximum(column_heights - l_column_heights, 0), np.maximum(column_heights - r_column_height, 0))
+    wells = wells.sum()
+    return wells
 
 def get_bumpiness(board):
     column_heights = get_column_heights(board)
@@ -56,7 +60,10 @@ def get_bumpiness(board):
     return bumpiness
 
 def get_holes(board):
-    holes = 0
+    board_matrix = board.board
+    column_heights = get_column_heights(board)
+    filled = np.equal(board_matrix, 1)
+    holes = int(column_heights.sum() - filled.sum())
     return holes
 
 def get_aggregate_height(board):
