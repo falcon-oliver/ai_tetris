@@ -1,10 +1,11 @@
 from random import random
+from include.ai.genetic_algorithm import GeneticAlgorithm
 from include.ai.heuristic_ai import HeuristicAi
 from include.game.game import Game
 from include.gui.gui import Gui
 
 FPS = 60
-def play_game():
+def test_heuristic_ai():
     game = Game(20, 20)
     gui = Gui(20, 20, game.board)
     heuristic_ai = HeuristicAi(game)
@@ -16,5 +17,11 @@ def play_game():
             heuristic_ai.step()
             frames = 0
 
+
+def test_genetic_algorithm():
+    genetic_algorithm = GeneticAlgorithm()
+    genetic_algorithm.train()
+    nn = genetic_algorithm.get_best_network()
+
 if __name__ == "__main__":
-    play_game()
+    test_genetic_algorithm()

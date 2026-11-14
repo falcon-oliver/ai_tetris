@@ -15,6 +15,7 @@ class Board:
         self.previous_board = self.board.copy()
         self.board[piece.y:piece.y+rows, piece.x:piece.x+cols] |= piece_matrix
         self.lines_cleared = self.clear_lines()
+        return self.lines_cleared
 
     def go_back(self):
         self.board = self.previous_board

@@ -4,6 +4,7 @@ from random import shuffle
 
 START_X = 4
 START_Y = 0
+
 class Game:
     def __init__(self, width=10, height=20):
         self.width = width
@@ -26,13 +27,12 @@ class Game:
         return bag
 
     def drop_piece(self, piece):
-        self.board.place_piece(piece)
+        lines_cleared = self.board.place_piece(piece)
         self.next_piece = self._get_next_piece()
-    
-    def gameOver(self):
-        return self.game_over
+        return lines_cleared
     
     def reset(self):
         self.game_over = False
         for piece in self.pieces:
             piece.reset()
+        self.board.reset()
